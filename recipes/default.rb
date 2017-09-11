@@ -14,16 +14,17 @@ remote_file 'apache-tomcat-8.5.20.tar.gz' do
   source 'http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v8.5.20/bin/apache-tomcat-8.5.20.tar.gz'
 end
 
-execute 'sudo mkdir /opt/tomcat'
+# execute 'sudo mkdir /opt/tomcat'
 
 directory '/opt/tomcat' do
+  only_if { ::File.exist?('/opt/tomcat') }
   group 'tomcat'
 end
 
 # could use directory construct better here
 execute 'sudo tar xvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1'
 
-directory 'opt/tomcat/conf' do
+directory '/opt/tomcat/conf' do
   mode '0070'
 end
 
@@ -39,7 +40,7 @@ template '/etc/systemd/system/tomcat.service' do
   source 'tomcat.service.erb'
 end
 
-execute 'sudo systemctl daemon-reload'
+#execute 'sudo systemctl daemon-reload'
 
 service 'tomcat' do
   action [:start, :enable]
